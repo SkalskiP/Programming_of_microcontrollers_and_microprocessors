@@ -9,17 +9,17 @@
 #----------------------------------------------------------------
 
 	.equ	kernel,0x80	#Linux system functions entry
-	equ	write,0x04	#write data to file function
-	.equ	exit,0yO1	#exit program function
+	.equ	write,0x04	#write data to file function
+	.equ	exit,0x01	#exit program function
 
 	.data
 	
 starttxt:			#first message
-	.ascii	"Start/n"
+	.ascii	"Start\n"
 endtxt:				#last message
-	.ascii	"Finish/n"
+	.ascii	"Finish\n"
 gurutxt:
-	.ascii	"A jem assembler guru/n"	#other message
+	.ascii	"A jem assembler guru\n"	#other message
 
 	.text
 	.global _start

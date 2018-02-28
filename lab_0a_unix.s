@@ -19,8 +19,13 @@ dummy:				# some data
 _start:
 	JMP	_start
 
+# ---------------------------------------------------------------
 # Wszystkie wyrazenia od kropek to dyrektywy asemblera
 # .data
 # .byte - rezerwujemy w pamieci zmienna typu byte o wartosci zero. Jednorazowo przed uruchomieniem programu tam bedzie zero.
 # .text - od tego momentu zaczyna sie kod programu
 # .global - oznacza ze symbol jest widoczny w calym kodzie i poza
+# JMP - skrot od "jump"
+#
+#
+# ---------------------------------------------------------------
