@@ -44,7 +44,7 @@ _start:
 	MOVL	$write,%eax	#write last message
 	MOVL	$1,%ebx
 	MOVL	$endtxt,%ecx
-	MOVL	10,%edx
+	MOVL	$10,%edx
 	INT	$kernel
 
 	NOP
