@@ -26,7 +26,7 @@ To link:      ```ld -o file_name file_name.o```
 
 To run:       ```gdb file_name```
 
-More information on debugging using gdb can be found <a href="https://github.com/SkalskiP/Programming_of_microcontrollers_and_microprocessors/blob/master/Lab_2/gdb_info.pdf">here</a>.
+More information on debugging using gdb can be found <a href="https://github.com/SkalskiP/Programming_of_microcontrollers_and_microprocessors/blob/master/Materials/gdb_info.pdf">here</a>.
 
 ## Cheat sheet
 
