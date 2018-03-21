@@ -13,13 +13,14 @@
 	.equ	write_64,	0x01	# write data to file function
 	.equ	exit_64,	0x3c	# exit program function
 
-	.equ	mode,	0x180	# attributes for file creating
-
+	.equ	mode,	0x1ff	# attributes for file creating
+	.equ    stderr, 2
 	.equ	errval,	2
 
 	.data
 	
-file_n:				# file name (0 terminated)
+file_n:				
+	# file name (0 terminated)
 	.string	"testfile.txt"
 
 file_h:				# file handle
@@ -28,7 +29,9 @@ file_h:				# file handle
 txtline:			# text to be written to file
 	.ascii	"A line of text\n"
 
-txtlen:				# size of written data
+txtlen:				
+	# size of written data
+	# dot is the address of current position during
 	.quad		( . - txtline )
 
 errmsg:				# file error message
@@ -60,10 +63,11 @@ _start:
 	MOV	$write_64,%rax	# write function
 	MOV	file_h,%rdi	# file handle in RDI
 	MOV	$txtline,%rsi	# RSI points to data buffer
-	MOV	$txtlen,%rdx	# bytes to be written
+	MOV	txtlen,%rdx	# bytes to be written
 	SYSCALL
 
 	CMP	%rdx,%rax
+	# jump if not zero 
 	JNZ	error		# if RAX<>RDX then something went wrong
 
 	MOV	$close_64,%rax	# close function
@@ -77,7 +81,7 @@ all_ok:
 	MOV	$write_64,%rax	# write function
 	MOV	$stderr,%rdi	# file handle in RDI
 	MOV	$allokmsg,%rsi	# RSI points to All OK message
-	MOV	$alloklen,%rdx	# bytes to be written
+	MOV	alloklen,%rdx	# bytes to be written
 	SYSCALL
 
 	XOR	%rdi,%rdi
@@ -87,7 +91,7 @@ error:
 	MOV	$write_64,%rax	# write function
 	MOV	$stderr,%rdi	# file handle in RDI
 	MOV	$errmsg,%rsi	# RSI points to file error message
-	MOV	$errlen,%rdx	# bytes to be written
+	MOV	errlen,%rdx	# bytes to be written
 	SYSCALL
 
 	MOV	$errval,%rdi
