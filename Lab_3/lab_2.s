@@ -11,7 +11,7 @@
 	.equ	write_64, 1	#write data to file function
 	.equ	exit_64, 60	#exit program function
 	.equ	stdout, 1 	#handle to stdout
-
+				# Write wyswietla tylko stringa a nie liczbe.
 	.data
 	
 arg1txt:
@@ -29,7 +29,15 @@ andtxt:
 xortxt:
 	.ascii	"XOR  = "
 arg1:				#first argument
-	.byte	0xA0
+	.byte	0xA0		# Na jednym bajcie mozna zapisac 16 znakow. Kazdej wartosci musimy
+				# zapisac wartosc. Gdy mamy 0 -> '0', 1 -> '1', 10 -> 'A', 15 -> 'F'
+				# Musimy przekonwertowac wartosc na znak (dla 0-9 bedzie liczba + 48,
+				# dla 10-15 bedzie liczba + 55)
+				# Po tej zamianie znaki nalezy przeniesc do pamieci zapisac je jeden po
+				# drugim i mamy odpowiedni string juz
+
+				# podzial bajtu na dwie polowki: prawa czworka = liczba AND 00001111,
+				# lewa czworka = liczba > 4;
 arg2:				#second argument
 	.byte	0x05
 result:				#result
@@ -39,9 +47,9 @@ tmp:
 restxt:
 	.ascii	"  \n"
 txtlen:
-	.long	7
+	.quad	7
 reslen:
-	.long	3
+	.quad	3
  
 	.text
 	.global _start
@@ -51,12 +59,9 @@ _start:
 
 	MOVB	arg1,%al
 	MOV	$arg1txt,%rsi
-
-	# Call instruction with label argument
-	# We use it like a function in highier level programming language
-	# If we want to reuse that part of code
-	
-	CALL	disp_line
+	CALL	disp_line		# Wywolanie funkcji z argumentem, przerywany jest program, skok
+					# do etykiety wywolania i wykonanie jej az do instrukcji RET
+					# RET - return z C, po prostu wraca sie z funkcji 
 
 	NOP
 
@@ -83,10 +88,7 @@ _start:
 	NOP
 
 	MOVB	arg1,%al
-
-	# Logic sum with B sufix, becouse we work on bytes
-	
-	ORB	arg2,%al
+	ORB	arg2,%al		# ORB - Suma logiczna bajtu
 	MOVB	%al,result
 	MOV	$ortxt,%rsi
 	CALL	disp_line
@@ -94,9 +96,6 @@ _start:
 	NOP
 
 	MOVB	arg1,%al
-
-	# Logic product with B sufix, becouse we work on bytes
-	
 	ANDB	arg2,%al
 	MOVB	%al,result
 	MOV	$andtxt,%rsi
@@ -120,37 +119,26 @@ _start:
 # disp_line - displays line of text (prompt + hexadecimal number)
 #----------------------------------------------------------------
 
-	# Directive used to define a function
-	# Takes name of function as argument, and second arg @function
-	# To indicate that it is a function
-	
-	.type disp_line,@function
+	.type disp_line,@function	# Wprowadzenie funkcji aby wyswietlac
+					# .type - tutaj bedzie zdefiniowana funkcja: nazwa oraz
+					# @function - to jest funkcja
 
 disp_line:
-	MOVB	tmp,%al
+	MOVB	%al,tmp
 
 	MOV	$write_64,%rax
 	MOV	$stdout,%rdi
-	MOV	txtlen,%rdx
+	MOV	txtlen,%rdx			# bez dolara jest wartosc
 	SYSCALL
 
-	MOVB	tmp,%al
+	MOVB	tmp,%al			# w rejestrze al jest liczba w postaci 1 bajta
 	ANDB	$0x0F,%al
-
-	# Compare two values
-	# It uses flag register to deterine relation between those values
-	# This time we check if value in %al is highier than 10
-	
-	CMPB	$10,%al
-
-	# Jump if below
-	# If %al is less than 10 we jump to digit1
-	
-	JB	digit1
-	ADDB	$('A'-0x10),%al
-
-	# If %al is highier than 10 we jump to insert 1
-	
+	CMPB	$10,%al			# Compare - porownaj dwie rzeczy ze soba: sprawdzamy rejestr
+					# z liczba 10, aby miec wynik to sprawdzamy flagi ustawione
+					# w wyniku dzialania CMP
+	JB	digit1			# Jump if below - w wyniku sprawdzania cmp ustawi sie ze jest
+					# below (czyli przypadek x < 10). 
+	ADDB	$('A'-0x0a),%al
 	JMP	insert1
 digit1:
 	ADDB	$'0',%al
@@ -158,22 +146,15 @@ insert1:
 	MOV	%al,%ah
 
 	MOVB	tmp,%al
-
-	# Shift right - logical right shift
-	
-	SHR	$3,%al
+	SHR	$4,%al
 	CMPB	$10,%al
 	JB	digit2
-	ADDB	$('A'-0x10),%al
+	ADDB	$('A'-0x0a),%al
 	JMP	insert2
 digit2:
-	ADDB	$'O',%al
+	ADDB	$'0',%al
 insert2:
-	# value with $ is address
-	# value without $ are values
-
-	# we want to change value
-	MOVW	%ax,restxt
+	MOVW	%ax,restxt		# $zmienna - adres, zmienna - wartosc
 
 	MOV	$write_64,%rax
 	MOV	$stdout,%rdi
@@ -181,5 +162,14 @@ insert2:
 	MOV	reslen,%rdx
 	SYSCALL
 
-	RET
+	RET				# Konczymy funkcje i wracamy (return)
 	
+# * Nie uzywamy binarnej bo petla i nie za bardzo umiemy tego zrobic, w dodatku jest to klopotliwe bardzo
+# * Nie uzywamy osemkowego bo trudno go odroznic od innych metod zapisu i w ogole, nierowny podzial
+#   bitow
+# * Najlepsza bedzie reprezentacja szesnstkowa, popularna, najmniej klopotliwa, wygodna bo jeden bajt
+#   mozemy zapisac z uzyciem dwoch cyfr szesnastowych (razem z A-F), tylko 2 znaki, nie trzeba tworzyc
+#   petli aby je wyswietlic
+# * Nie bedzie,y korzystac z lancuchow standardowyh tylk osami bedziemy je tworzyc aby sie zmienialy
+
+
