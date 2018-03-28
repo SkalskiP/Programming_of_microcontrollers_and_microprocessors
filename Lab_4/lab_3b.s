@@ -77,6 +77,15 @@ _start:
 
 	MOV	%rax,file_h	# store file handle returned in RAX
 
+	# file contains
+	MOV	$write_64,%eax	# write function
+	MOV	$stdout,%rdi	# file handle in RDI
+	MOV	$cntmsg,%rsi	# RSI points to message
+	MOV	cntlen,%rdx	# bytes to be written
+	SYSCALL
+
+loop:
+
 	MOV	$read_64,%rax	# read function
 	MOV	file_h,%rdi	# file handle in RDI
 	MOV	$buffer,%rsi	# RSI points to data buffer
@@ -88,28 +97,23 @@ _start:
 
 	MOV	%rax,b_read	# store count of read bytes
 
+	MOV	$write_64,%rax	# write function
+	MOV	$stdout,%rdi	# file handle in RDI
+	MOV	$buffer,%rsi	# offset to first character
+	MOV	b_read,%rdx	# count of characters
+	SYSCALL
+
+	# too big 
+	MOV	b_read,%rax
+	CMP	bufsize,%rax	# whole file was read ?
+	JAE	loop		# probably not
+
 	MOV	$close_64,%rax	# close function
 	MOV	file_h,%rdi	# file handle in RDI
 	SYSCALL
 
 	CMP	$0,%rax
 	JL	error		# if RAX<0 then something went wrong
-
-	MOV	b_read,%rax
-	CMP	bufsize,%rax	# whole file was read ?
-	JAE	toobig		# probably not
-
-	MOV	$write_64,%eax	# write function
-	MOV	$stdout,%rdi	# file handle in RDI
-	MOV	$cntmsg,%rsi	# RSI points to message
-	MOV	cntlen,%rdx	# bytes to be written
-	SYSCALL
-
-	MOV	$write_64,%rax	# write function
-	MOV	$stdout,%rdi	# file handle in RDI
-	MOV	$buffer,%rsi	# offset to first character
-	MOV	b_read,%rdx	# count of characters
-	SYSCALL
 
 all_ok:
 	MOV	$write_64,%eax	# write function
