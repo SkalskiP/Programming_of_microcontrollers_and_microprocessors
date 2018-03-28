@@ -19,6 +19,9 @@
 
 	.data
 	
+counter:
+	.byte		10	# loop counter we start from 10 and go down
+				# each time we will check if value is 0 before jump
 file_n:				
 	# file name (0 terminated)
 	.string	"testfile.txt"
@@ -48,6 +51,7 @@ alloklen:
 
 	.text
 	.global _start
+
 	
 _start:
 	MOV	$create_64,%rax	# create function
@@ -60,6 +64,8 @@ _start:
 
 	MOV	%rax,file_h	# store file handle returned in EAX
 
+loop:	# label for creating the loop	
+
 	MOV	$write_64,%rax	# write function
 	MOV	file_h,%rdi	# file handle in RDI
 	MOV	$txtline,%rsi	# RSI points to data buffer
@@ -69,6 +75,15 @@ _start:
 	CMP	%rdx,%rax
 	# jump if not zero 
 	JNZ	error		# if RAX<>RDX then something went wrong
+
+	# --------------------------------------------------------------------
+	# My new code, that make loop work
+	# --------------------------------------------------------------------
+
+	DECB	counter		# decrementing counter with size of byte by one
+	JNZ 	loop		# if flag not zero jump to label loop
+
+	# --------------------------------------------------------------------
 
 	MOV	$close_64,%rax	# close function
 	MOV	file_h,%rdi	# file handle in RDI
