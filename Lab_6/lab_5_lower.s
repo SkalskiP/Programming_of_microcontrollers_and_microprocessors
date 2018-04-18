@@ -107,28 +107,11 @@ next:
 # REPE / REPZ
 # REPNE / REPNZ 
 
-	CMPB	$'0', %al
-	JB skip
-	CMPB	$'9', %al
-	JBE change_num
-	
 	CMPB	$'A', %al
 	JB skip
-	CMPB	$'z', %al
-	JA skip
-
-	CMPB	$'a', %al
-	JAE change
 	CMPB	$'Z', %al
-	JBE change
-
-	JMP skip
-	
-change_num:
-	MOV $'+', %al
-	JMP skip	
-
-change:	XOR	$0x20, %al
+	JA skip
+	OR	$0x20, %al
 skip:	STOSB			# MEM[ rdi ] := al; rdi++
 				# sufix is required
 				# according to selected sufix, value is placed in proper 					# register
