@@ -12,7 +12,7 @@ long long int factc( unsigned int k )
 {
 	long long result = 1;
 	while( k > 1 )
-	   result *= k--;
+		result *= k--;
 	return result;			
 }
 
@@ -20,8 +20,9 @@ long long int facta( unsigned int k );
 
 void main( void )
 {
- int i;
+	int i;
 
- for( i = 1; i <= 6; i++ )
-   printf( "Fact(%d) = %ld FactA = %ld\n", i, factc(i), facta(i) );
+	// for( i = 1; i <= 10; i++ )
+	for( i = 1; i <= 25; i++ )
+		printf( "Fact(%d) = %ld FactA = %ld\n", i, factc(i), facta(i) );
 }

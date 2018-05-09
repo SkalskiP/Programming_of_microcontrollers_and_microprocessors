@@ -1,13 +1,26 @@
 #----------------------------------------------------------------
-# Funkcja do programu lab_6a - Asemblery Laboratorium IS II rok
+# Program lab_6d.s - Asemblery Laboratorium IS II rok
+#----------------------------------------------------------------
+#
+#  To compile&link: gcc -o lab_6d lab_6d.s
+#  To run: 	    ./lab_6d
+#
 #----------------------------------------------------------------
 
+	.data
+fmt:
+	.asciz	 "Value = %ld\n"
+value:
+	.quad	15
+	
 	.text
-	.type add_three_numa, @function
-	.globl add_three_numa	
+	.global main
+	
+main:
+	mov value(%rip), %rsi
+	lea fmt(%rip), %rdi
+	mov $0, %rax
+	call *printf@GOTPCREL(%rip)
 
-add_three_numa:	mov %rdi, %rax
-	add %rsi, %rax
-	add %rdx, %rax
-	ret
-
+	mov $0,%rdi
+	call *exit@GOTPCREL(%rip)
