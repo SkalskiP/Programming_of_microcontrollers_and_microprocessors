@@ -36,9 +36,15 @@ More information on debugging using gdb can be found <a href="https://github.com
 
 ```.equ```  directive is used to give name to some value or symbol. Each time the assembler finds the given names in the program, it will replace the name with the value or a symbol.
 
-```.data``` directive changes the current section to .data.
+```.data``` directive changes the current section to .data. This part of program is used for variable declarations.
+
+```.text``` directive defines the current section as .text. This part of program is used for defining assembly language instructions.
+
+```.global``` directive declares each symbol in the list to be global. A global symbol definition in one file satisfies an undefined reference to the same global symbol in another file. Multiple definitions of a defined global symbol are not allowed. If a defined global symbol has more than one definition, an error occurs. The .globl directive only declares the symbol to be global in scope, it does not define the symbol. .global makes the symbol visible to ld. If you define symbol in your partial program, its value is made available to other partial programs that are linked with it. Otherwise, symbol takes its attributes from a symbol of the same name from another file linked into the same program.
 
 ```.ascii``` directive places the characters in string into the object module at the current location but does not terminate the string with a null byte (\0). String must be enclosed in double quotes (")
+
+```.asciz``` is just like ```.ascii```, but each string is followed by a zero byte. The "z" in '.asciz' stands for "zero".
 
 ```.byte``` directive generates initialized bytes into the current section. Each byte must be an 8-bit value.
 
@@ -46,9 +52,26 @@ More information on debugging using gdb can be found <a href="https://github.com
 
 ```.long``` directive generates a long integer (32-bit, two's complement value) for each expression into the current section. Each expression must be a 32–bit value and must evaluate to an integer value.
 
-```.text``` directive defines the current section as .text.
+### Registers in 64-bit architecture
 
-```.global``` directive declares each symbol in the list to be global. Each symbol is either defined externally or defined in the input file and accessible in other files. Default bindings for the symbol are overridden. A global symbol definition in one file satisfies an undefined reference to the same global symbol in another file. Multiple definitions of a defined global symbol are not allowed. If a defined global symbol has more than one definition, an error occurs. The .globl directive only declares the symbol to be global in scope, it does not define the symbol.
+| 64-bit register | Lower 32 bits | Lower 16 bits | Lower 8 bits  |
+| --------------- |:-------------:|:-------------:|:-------------:|
+| rax             | eax           | ax            | al            |
+| rbx             | ebx           | bx            | bl            |
+| rcx             | ecx           | cx            | cl            |
+| rdx             | edx           | dx            | dl            |
+| rsi             | esi           | si            | sil           |
+| rdi             | edi           | di            | dil           |
+| rbp             | ebp           | bp            | bpl           |
+| rsp             | esp           | sp            | spl           |
+| r8              | r8d           | r8w           | r8b           |
+| r9              | r9d           | r9w           | r9b           |
+| r10             | r10d          | r10w          | r10b          |
+| r11             | r11d          | r11w          | r11b          |
+| r12             | r12d          | r12w          | r12b          |
+| r13             | r13d          | r13w          | r13b          |
+| r14             | r14d          | r14w          | r14b          |
+| r15             | r15d          | r15w          | r15b          |
 
 ### Instructions
 
