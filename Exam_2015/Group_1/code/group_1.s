@@ -1,5 +1,5 @@
 # EXPLANATION
-# registers rdi, rsi, rdx store subsequent arguments passed to the function
+# registers rdi, rsi, rdx, rcx store subsequent arguments passed to the function
 # (a, b, c)
 
     .type greatest, @function
