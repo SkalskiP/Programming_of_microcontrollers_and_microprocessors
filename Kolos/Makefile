@@ -1,7 +1,7 @@
 all: skalski clean
 
-skalski: ./skalski.c ./skalski.s
-	gcc -o ./skalski ./skalski.c ./skalski.s
+skalski: ./skalski.c ./skalski_new.s
+	gcc -o ./skalski ./skalski.c ./skalski_new.s
 
 .PHONY: clean
 
